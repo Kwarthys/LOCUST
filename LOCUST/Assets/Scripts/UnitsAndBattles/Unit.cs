@@ -19,10 +19,16 @@ public abstract class Unit
     public Unit(UnitType type, string name, float vi, float vh, float vf, float scoreValue)
     {
         this.type = type;
+        this.name = name;
 
         vInfantryScore = vi;
         vHeavyScore = vh;
         vFlyingScore = vf;
+
+        if(vi+vh+vf != 3.0)
+        {
+            Debug.LogError(name + " stats not adding up to 3");
+        }
 
         this.scoreValue = scoreValue;
     }
@@ -54,6 +60,9 @@ public abstract class Unit
             case UnitList.Tank:
                 return new Tank();
 
+            case UnitList.Samurai:
+                return new Samurai();
+
             default:
                 return null;
         }
@@ -62,7 +71,7 @@ public abstract class Unit
 }
 
 
-public enum UnitList { Marine, Tank}
+public enum UnitList { Marine, Tank, Samurai }
 
 
 public class Marine : Unit
@@ -74,6 +83,13 @@ public class Marine : Unit
 
 public class Tank : Unit
 {
-    public Tank() : base(UnitType.Infantry, "Tank", 1.0f, 1.5f, 0.5f, 300)
+    public Tank() : base(UnitType.Heavy, "Tank", 1.0f, 2.0f, 0.0f, 300)
+    { }
+}
+
+
+public class Samurai : Unit
+{
+    public Samurai() : base(UnitType.Infantry, "Samurai", 2.5f, 0.5f, 0.0f, 10)
     { }
 }
