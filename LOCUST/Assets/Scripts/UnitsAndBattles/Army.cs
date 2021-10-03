@@ -8,17 +8,17 @@ public class ArmyScore
 
     private float[,] scoresAttackMatrix = new float[3,3];
 
-    public Dictionary<UnitType, float> perTypeScore = new Dictionary<UnitType, float>();
+    public Dictionary<UnitType, float> perTypeSizeScore = new Dictionary<UnitType, float>();
     public Dictionary<UnitType, float> perTypePercent = new Dictionary<UnitType, float>();
 
     public ArmyScore()
     {
         //Init all dictionaries
-        perTypeScore[UnitType.Infantry] = 0;
-        perTypeScore[UnitType.Heavy] = 0;
-        perTypeScore[UnitType.Flying] = 0;
+        perTypeSizeScore[UnitType.Infantry] = 0;
+        perTypeSizeScore[UnitType.Heavy] = 0;
+        perTypeSizeScore[UnitType.Flying] = 0;
 
-        foreach (KeyValuePair<UnitType, float> entry in perTypeScore)
+        foreach (KeyValuePair<UnitType, float> entry in perTypeSizeScore)
         {
             perTypePercent[entry.Key] = 0;
         }
@@ -34,14 +34,19 @@ public class ArmyScore
         scoresAttackMatrix[(int)typeFrom, (int)typeTo] += score;
     }
 
+    public float getTotalVersusType(UnitType versus)
+    {
+        return scoresAttackMatrix[(int)UnitType.Infantry, (int)versus] + scoresAttackMatrix[(int)UnitType.Heavy, (int)versus] + scoresAttackMatrix[(int)UnitType.Flying, (int)versus];
+    }
+
     public void addTypeScore(UnitType type, float score)
     {
-        if (!perTypeScore.ContainsKey(type))
+        if (!perTypeSizeScore.ContainsKey(type))
         {
-            perTypeScore[type] = 0;
+            perTypeSizeScore[type] = 0;
         }
 
-        perTypeScore[type] += score;
+        perTypeSizeScore[type] += score;
 
         computeForces();
     }
@@ -50,12 +55,12 @@ public class ArmyScore
     {
         float sum = 0;
 
-        foreach (KeyValuePair<UnitType, float> entry in perTypeScore)
+        foreach (KeyValuePair<UnitType, float> entry in perTypeSizeScore)
         {
             sum += entry.Value;
         }
 
-        foreach (KeyValuePair<UnitType, float> entry in perTypeScore)
+        foreach (KeyValuePair<UnitType, float> entry in perTypeSizeScore)
         {
             perTypePercent[entry.Key] = entry.Value / sum;
         }
@@ -64,7 +69,7 @@ public class ArmyScore
     public void print(string prefix = "")
     {
         string print = prefix;
-        foreach (KeyValuePair<UnitType, float> entry in perTypeScore)
+        foreach (KeyValuePair<UnitType, float> entry in perTypeSizeScore)
         {
             print += " | " + entry.Key + ":" + entry.Value + " (" + perTypePercent[entry.Key]*100 + ")";
         }

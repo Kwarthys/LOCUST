@@ -7,6 +7,9 @@ public class BattleManager : MonoBehaviour
     public Army armyA = new Army();
     public Army armyB = new Army();
 
+    public ArmyDisplayController armyDisplay;
+    public ArmyDisplayController armyDisplay2;
+
     public float coefLossPerTick = 0.1f;
 
     void Start()
@@ -23,21 +26,23 @@ public class BattleManager : MonoBehaviour
         Debug.Log("VERSUS");
         Debug.Log("B: " + armyB);
 
-        for(int i = 0; i < 20; ++i)
+        for(int i = 0; i < 10; ++i)
         {
-            combat(armyA, armyB);
+            //combat(armyA, armyB);
+            //combat(armyB, armyA);
         }
 
         Debug.Log("Gives");
         Debug.Log("A: " + armyA);
         Debug.Log("B: " + armyB);
 
-        //will have to remove that later, when combat will be working
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-      Application.Quit();
-#endif
+        armyDisplay.toDisplay = armyA;
+        armyDisplay.armyName = "armyA";
+        armyDisplay.displayArmy();
+
+        armyDisplay2.toDisplay = armyB;
+        armyDisplay2.armyName = "armyB";
+        armyDisplay2.displayArmy();
     }
 
     // Update is called once per frame
