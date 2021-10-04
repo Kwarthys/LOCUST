@@ -99,9 +99,14 @@ public class Army
         }
     }
 
+    public bool isEmpty()
+    {
+        return troops.Count == 0;
+    }
+
     public void removeSomeTroops(float pointsToRemove, UnitType filter = UnitType.None)
     {
-        while (pointsToRemove > 0)
+        while (pointsToRemove > 0 && troops.Count > 0)
         {
             List<UnitList> keys = System.Linq.Enumerable.ToList(troops.Keys);//doing that each time as regiments can be destroyed
             UnitList unitToHurt = keys[(int)(Random.value * keys.Count)];

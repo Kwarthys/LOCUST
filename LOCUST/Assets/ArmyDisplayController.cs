@@ -19,6 +19,13 @@ public class ArmyDisplayController : MonoBehaviour
     public GameObject unitDisplayControlerPrefab;
     public RectTransform unitDisplayHolder;
 
+    public void displayArmy(Army toDisplay, string armyName)
+    {
+        this.armyName = armyName;
+        this.toDisplay = toDisplay;
+        displayArmy();
+    }
+
     public void displayArmy()
     {
         if (toDisplay == null) return;

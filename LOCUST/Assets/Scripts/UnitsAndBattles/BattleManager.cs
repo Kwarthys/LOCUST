@@ -12,43 +12,95 @@ public class BattleManager : MonoBehaviour
 
     public float coefLossPerTick = 0.1f;
 
+    public float tickRoundBattle = 1f; //fight(s) per second
+
+    public TimedCallBack timer;
+
+    private List<float> scoresA = new List<float>();
+    private List<float> scoresB = new List<float>();
+
+    //debug
+    //private int c = 0;
+
     void Start()
     {
+        timer.setup(tickRoundBattle, new TimerCallBack(this), false);
+        timer.go();
+
         //Test battle
 
         armyA.addTroops(UnitList.Marine, 500);
         armyA.addTroops(UnitList.Samurai, 1200);
-        armyA.addTroops(UnitList.Tank, 1);
+        //armyA.addTroops(UnitList.Tank, 1);
         armyB.addTroops(UnitList.Marine, 200);
-        armyB.addTroops(UnitList.Tank, 50);
+        armyB.addTroops(UnitList.Samurai, 1500);
 
+        armyDisplay.displayArmy(armyA, "ArmyA");
+        armyDisplay2.displayArmy(armyB, "ArmyB");
+    }
+
+    public void fight()
+    {
+        scoresA.Add(armyA.computeScore().armySize);
+        scoresB.Add(armyB.computeScore().armySize);
+
+        if (armyA.isEmpty() || armyB.isEmpty())
+        {
+            combat(armyA, armyB);
+            timer.stop();
+
+            string print = "[";
+            for(int i = 0; i < scoresA.Count; ++i)
+            {
+                print += scoresA[i];
+                if(i< scoresA.Count-1)
+                {
+                    print += ", ";
+                }
+            }
+            print += "]";
+
+            Debug.Log(print);
+
+            print = "[";
+            for (int i = 0; i < scoresB.Count; ++i)
+            {
+                print += scoresB[i];
+                if (i < scoresB.Count - 1)
+                {
+                    print += ", ";
+                }
+            }
+            print += "]";
+
+            Debug.Log(print);
+
+
+            return;
+        }
+
+        /*
         Debug.Log("A: " + armyA);
         Debug.Log("VERSUS");
         Debug.Log("B: " + armyB);
-
-        for(int i = 0; i < 10; ++i)
-        {
-            //combat(armyA, armyB);
-            //combat(armyB, armyA);
-        }
-
-        Debug.Log("Gives");
-        Debug.Log("A: " + armyA);
-        Debug.Log("B: " + armyB);
-
-        armyDisplay.toDisplay = armyA;
-        armyDisplay.armyName = "armyA";
-        armyDisplay.displayArmy();
-
-        armyDisplay2.toDisplay = armyB;
-        armyDisplay2.armyName = "armyB";
-        armyDisplay2.displayArmy();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
+        */
+        combat(armyA, armyB);
+        combat(armyB, armyA);
         
+        //Debug.Log("Gives");
+        //Debug.Log("A: " + armyA);
+        //Debug.Log("B: " + armyB);
+        
+        armyDisplay.displayArmy();
+        armyDisplay2.displayArmy();
+
+        /*
+        c++;
+        if (c == 25)
+        {
+            armyA.addTroops(UnitList.Samurai, 1200);
+        }
+        */
     }
 
 
@@ -82,6 +134,7 @@ public class BattleManager : MonoBehaviour
         armyB.removeSomeTroops(bfvx, UnitType.Flying);
     }
 
+    //battle brain
     public void clash(UnitType typeClash, ArmyScore a, ArmyScore b, out float aLostAmount, out float bLostAmount)
     {
         float ascore = a.getMatrix(UnitType.Infantry, typeClash) + a.getMatrix(UnitType.Heavy, typeClash) + a.getMatrix(UnitType.Flying, typeClash);
@@ -93,9 +146,20 @@ public class BattleManager : MonoBehaviour
 
         //Debug.Log("bscore = " + b.getMatrix(typeClash, UnitType.Infantry) + " * " + a.perTypePercent[UnitType.Infantry] + " + " + b.getMatrix(typeClash, UnitType.Heavy) + " * " + a.perTypePercent[UnitType.Heavy] + " + " + b.getMatrix(typeClash, UnitType.Flying) + " * " + a.perTypePercent[UnitType.Flying]);
 
-        aLostAmount = lossFunction(ascore, bscore) * a.armySize * b.perTypePercent[typeClash] * coefLossPerTick;
-        bLostAmount = lossFunction(bscore, ascore) * b.armySize * b.perTypePercent[typeClash] * coefLossPerTick;
 
+        //MANY TESTS, third seems best
+
+
+        //aLostAmount = lossFunction(ascore, bscore) * a.armySize * b.perTypePercent[typeClash] * coefLossPerTick;
+        //bLostAmount = lossFunction(bscore, ascore) * b.armySize * b.perTypePercent[typeClash] * coefLossPerTick;
+
+        //aLostAmount = lossFunction(ascore, bscore) * (a.armySize + b.armySize)/2 * b.perTypePercent[typeClash] * coefLossPerTick;
+        //bLostAmount = lossFunction(bscore, ascore) * (a.armySize + b.armySize)/2 * b.perTypePercent[typeClash] * coefLossPerTick;
+
+        aLostAmount = lossFunction(ascore, bscore) * bscore * b.perTypePercent[typeClash] * coefLossPerTick;
+        bLostAmount = lossFunction(bscore, ascore) * ascore * b.perTypePercent[typeClash] * coefLossPerTick;
+
+        //Debug.Log(typeClash + " lossFunction(ascore, bscore) " + lossFunction(ascore, bscore));
         //Debug.Log(typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
     }
 
@@ -105,5 +169,20 @@ public class BattleManager : MonoBehaviour
         if (scoreA == 0 || scoreB == 0) return 0;
 
         return scoreB * scoreB / (scoreB * scoreB + scoreA * scoreA);
+    }
+
+    public class TimerCallBack : IMyCallBack
+    {
+        private BattleManager toCall;
+
+        public TimerCallBack(BattleManager toCall)
+        {
+            this.toCall = toCall;
+        }
+
+        public void call()
+        {
+            toCall.fight();
+        }
     }
 }

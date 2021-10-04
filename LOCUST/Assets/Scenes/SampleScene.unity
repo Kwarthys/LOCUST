@@ -328,6 +328,7 @@ GameObject:
   m_Component:
   - component: {fileID: 644439803}
   - component: {fileID: 644439802}
+  - component: {fileID: 644439804}
   m_Layer: 0
   m_Name: BattleManager
   m_TagString: Untagged
@@ -349,7 +350,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   armyDisplay: {fileID: 208713786}
   armyDisplay2: {fileID: 253571229}
-  coefLossPerTick: 0.1
+  coefLossPerTick: 0.01
+  tickRoundBattle: 0.1
+  timer: {fileID: 644439804}
 --- !u!4 &644439803
 Transform:
   m_ObjectHideFlags: 0
@@ -364,6 +367,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &644439804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 644439801}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f713f32fdbbd1f4e8f2082ed4ede5da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &653260035
 GameObject:
   m_ObjectHideFlags: 0
