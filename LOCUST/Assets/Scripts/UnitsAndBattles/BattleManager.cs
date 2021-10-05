@@ -11,6 +11,7 @@ public class BattleManager : MonoBehaviour
     public ArmyDisplayController armyDisplay2;
 
     public float coefLossPerTick = 0.1f;
+    private float minSizeThreshold = 500;
 
     public float tickRoundBattle = 1f; //fight(s) per second
 
@@ -18,6 +19,8 @@ public class BattleManager : MonoBehaviour
 
     private List<float> scoresA = new List<float>();
     private List<float> scoresB = new List<float>();
+
+    private MyFileWriter logger = new MyFileWriter();
 
     //debug
     //private int c = 0;
@@ -31,9 +34,9 @@ public class BattleManager : MonoBehaviour
 
         armyA.addTroops(UnitList.Marine, 500);
         armyA.addTroops(UnitList.Samurai, 1200);
-        //armyA.addTroops(UnitList.Tank, 1);
-        armyB.addTroops(UnitList.Marine, 200);
-        armyB.addTroops(UnitList.Samurai, 1500);
+        armyA.addTroops(UnitList.Bomber, 5);
+        armyB.addTroops(UnitList.Tank, 50);
+        armyB.addTroops(UnitList.Marine, 300);
 
         armyDisplay.displayArmy(armyA, "ArmyA");
         armyDisplay2.displayArmy(armyB, "ArmyB");
@@ -75,6 +78,9 @@ public class BattleManager : MonoBehaviour
 
             Debug.Log(print);
 
+            logger.writeLog("ArmyA", scoresA, false);
+            logger.writeLog("ArmyB", scoresB);
+
 
             return;
         }
@@ -85,7 +91,7 @@ public class BattleManager : MonoBehaviour
         Debug.Log("B: " + armyB);
         */
         combat(armyA, armyB);
-        combat(armyB, armyA);
+        //combat(armyB, armyA);
         
         //Debug.Log("Gives");
         //Debug.Log("A: " + armyA);
@@ -104,39 +110,19 @@ public class BattleManager : MonoBehaviour
     }
 
 
-    public void combat(Army armyA, Army armyB)
+    public void combat(Army a, Army b)
     {
-        //Debug.Log("ArmyA");
-        ArmyScore a = armyA.computeScore();
-        //Debug.Log("ArmyB");
-        ArmyScore b = armyB.computeScore();
-
-        //a.print("A");
-        //b.print("B");
-
-        /*
-        float antiInfantryAttack = b.getMatrix(UnitType.Infantry, UnitType.Infantry) + b.getMatrix(UnitType.Heavy, UnitType.Infantry) + b.getMatrix(UnitType.Flying, UnitType.Infantry);
-        antiInfantryAttack *= b.perTypePercent[UnitType.Infantry];
-        float infantryDefenseScore = b.getMatrix(UnitType.Infantry, UnitType.Infantry) * a.perTypePercent[UnitType.Infantry] + b.getMatrix(UnitType.Infantry, UnitType.Heavy) * a.perTypePercent[UnitType.Heavy] + b.getMatrix(UnitType.Infantry, UnitType.Flying) * a.perTypePercent[UnitType.Flying];
-
-        Debug.Log("InfantryClash " + antiInfantryAttack + " A vs B " + infantryDefenseScore);
-        */
-
-        clash(UnitType.Infantry, a, b, out float axvi, out float bivx);
-        clash(UnitType.Heavy, a, b, out float axvh, out float bhvx);
-        clash(UnitType.Flying, a, b, out float axvf, out float bfvx);
-
-        armyA.removeSomeTroops(axvi);
-        armyB.removeSomeTroops(bivx, UnitType.Infantry);
-        armyA.removeSomeTroops(axvh);
-        armyB.removeSomeTroops(bhvx, UnitType.Heavy);
-        armyA.removeSomeTroops(axvf);
-        armyB.removeSomeTroops(bfvx, UnitType.Flying);
+        clash(UnitType.Infantry, a, b);
+        clash(UnitType.Heavy, a, b);
+        clash(UnitType.Flying, a, b);
     }
 
     //battle brain
-    public void clash(UnitType typeClash, ArmyScore a, ArmyScore b, out float aLostAmount, out float bLostAmount)
+    public void clash(UnitType typeClash, Army armyA, Army armyB)//, out float aLostAmount, out float bLostAmount)
     {
+        ArmyScore a = armyA.computeScore();
+        ArmyScore b = armyB.computeScore();
+
         float ascore = a.getMatrix(UnitType.Infantry, typeClash) + a.getMatrix(UnitType.Heavy, typeClash) + a.getMatrix(UnitType.Flying, typeClash);
         ascore *= b.perTypePercent[typeClash];
 
@@ -156,17 +142,50 @@ public class BattleManager : MonoBehaviour
         //aLostAmount = lossFunction(ascore, bscore) * (a.armySize + b.armySize)/2 * b.perTypePercent[typeClash] * coefLossPerTick;
         //bLostAmount = lossFunction(bscore, ascore) * (a.armySize + b.armySize)/2 * b.perTypePercent[typeClash] * coefLossPerTick;
 
-        aLostAmount = lossFunction(ascore, bscore) * bscore * b.perTypePercent[typeClash] * coefLossPerTick;
-        bLostAmount = lossFunction(bscore, ascore) * ascore * b.perTypePercent[typeClash] * coefLossPerTick;
+        float aLostAmount = lossFunction(ascore, bscore) * bscore * b.perTypePercent[typeClash];
+        float bLostAmount = lossFunction(bscore, ascore) * ascore * b.perTypePercent[typeClash];
+
+        float coef;
+
+        //Gaining resolution as the armies shrink in sizes
+        if (Mathf.Min(a.armySize, b.armySize) < minSizeThreshold)
+        {
+            coef = coefFunction(Mathf.Min(a.armySize, b.armySize));
+        }
+        else
+        {
+            coef = coefLossPerTick;
+        }
+
+        aLostAmount *= coef;
+        bLostAmount *= coef;
 
         //Debug.Log(typeClash + " lossFunction(ascore, bscore) " + lossFunction(ascore, bscore));
-        //Debug.Log(typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
+        //Debug.Log("Coef " + coef + " :: " + typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
+
+        //removetroops
+
+        armyB.removeSomeTroops(bLostAmount, typeClash);
+
+        float armyBtotal = b.getTotalByType(typeClash);
+
+        armyA.removeSomeTroops(aLostAmount * b.getMatrix(typeClash, UnitType.Infantry) / armyBtotal, UnitType.Infantry);
+        armyA.removeSomeTroops(aLostAmount * b.getMatrix(typeClash, UnitType.Heavy) / armyBtotal, UnitType.Heavy);
+        armyA.removeSomeTroops(aLostAmount * b.getMatrix(typeClash, UnitType.Flying) / armyBtotal, UnitType.Flying);
+    }
+
+    private float coefFunction(float score)
+    {
+        float a = (1 - coefLossPerTick) / (0 - minSizeThreshold);
+        float b = coefLossPerTick - a * minSizeThreshold;
+
+        return a * score + b;
     }
 
     //loss in points of A in the fight A vs B (losses of B are 1-lossesOfA)
     public float lossFunction(float scoreA, float scoreB)
     {
-        if (scoreA == 0 || scoreB == 0) return 0;
+        if (scoreA == 0 && scoreB == 0) return 0;
 
         return scoreB * scoreB / (scoreB * scoreB + scoreA * scoreA);
     }

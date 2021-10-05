@@ -63,6 +63,9 @@ public abstract class Unit
             case UnitList.Samurai:
                 return new Samurai();
 
+            case UnitList.Bomber:
+                return new Bomber();
+
             default:
                 return null;
         }
@@ -71,7 +74,7 @@ public abstract class Unit
 }
 
 
-public enum UnitList { Marine, Tank, Samurai }
+public enum UnitList { Marine, Tank, Samurai, Bomber }
 
 
 public class Marine : Unit
@@ -91,5 +94,12 @@ public class Tank : Unit
 public class Samurai : Unit
 {
     public Samurai() : base(UnitType.Infantry, "Samurai", 2.5f, 0.5f, 0.0f, 10)
+    { }
+}
+
+
+public class Bomber : Unit
+{
+    public Bomber() : base(UnitType.Flying, "Bomber", 0.5f, 2.0f, 0.5f, 200)
     { }
 }

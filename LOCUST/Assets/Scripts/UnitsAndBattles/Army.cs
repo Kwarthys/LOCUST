@@ -39,6 +39,11 @@ public class ArmyScore
         return scoresAttackMatrix[(int)UnitType.Infantry, (int)versus] + scoresAttackMatrix[(int)UnitType.Heavy, (int)versus] + scoresAttackMatrix[(int)UnitType.Flying, (int)versus];
     }
 
+    public float getTotalByType(UnitType from)
+    {
+        return scoresAttackMatrix[(int)from, (int)UnitType.Infantry] + scoresAttackMatrix[(int)from, (int)UnitType.Heavy] + scoresAttackMatrix[(int)from, (int)UnitType.Flying];
+    }
+
     public void addTypeScore(UnitType type, float score)
     {
         if (!perTypeSizeScore.ContainsKey(type))
@@ -99,6 +104,21 @@ public class Army
         }
     }
 
+    public List<UnitList> getTroopsOfType(UnitType type)
+    {
+        List<UnitList> list = new List<UnitList>();
+
+        foreach(UnitList troop in troops.Keys)
+        {
+            if(Unit.getUnit(troop).type == type || type == UnitType.None)
+            {
+                list.Add(troop);
+            }
+        }
+
+        return list;
+    }
+
     public bool isEmpty()
     {
         return troops.Count == 0;
@@ -106,10 +126,11 @@ public class Army
 
     public void removeSomeTroops(float pointsToRemove, UnitType filter = UnitType.None)
     {
-        while (pointsToRemove > 0 && troops.Count > 0)
+        List<UnitList> troopSubList = getTroopsOfType(filter);
+
+        while (pointsToRemove > 0 && troopSubList.Count > 0)
         {
-            List<UnitList> keys = System.Linq.Enumerable.ToList(troops.Keys);//doing that each time as regiments can be destroyed
-            UnitList unitToHurt = keys[(int)(Random.value * keys.Count)];
+            UnitList unitToHurt = troopSubList[(int)(Random.value * troopSubList.Count)];
             Unit unit = Unit.getUnit(unitToHurt);
             float unitScore = unit.scoreValue;
 
@@ -151,6 +172,9 @@ public class Army
                     pointsToRemove -= (int)(actualRemoved * unitScore);
                 }
             }
+
+
+            troopSubList = getTroopsOfType(filter); //preparing next loop
         }
     }
 
