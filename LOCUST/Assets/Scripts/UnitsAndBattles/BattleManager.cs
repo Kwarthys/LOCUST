@@ -28,18 +28,23 @@ public class BattleManager : MonoBehaviour
     void Start()
     {
         timer.setup(tickRoundBattle, new TimerCallBack(this), false);
-        timer.go();
+        //timer.go();
 
         //Test battle
 
-        armyA.addTroops(UnitList.Marine, 500);
-        armyA.addTroops(UnitList.Samurai, 1200);
+        armyA.addTroops(UnitList.Samurai, 10);
         armyA.addTroops(UnitList.Bomber, 5);
         armyB.addTroops(UnitList.Tank, 50);
         armyB.addTroops(UnitList.Marine, 300);
+        armyB.addTroops(UnitList.Fighter, 100);
 
         armyDisplay.displayArmy(armyA, "ArmyA");
         armyDisplay2.displayArmy(armyB, "ArmyB");
+    }
+
+    public void startBattle()
+    {
+        timer.go();
     }
 
     public void fight()
@@ -203,5 +208,11 @@ public class BattleManager : MonoBehaviour
         {
             toCall.fight();
         }
+    }
+
+    public void recruitForPlayer(UnitList unit, int number)
+    {
+        armyA.addTroops(unit, number);
+        armyDisplay.displayArmy();
     }
 }
