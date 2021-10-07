@@ -5,6 +5,47 @@ using UnityEngine;
 public enum UnitType { Infantry, Heavy, Flying, None}
 public enum GameResources { BioMass, Metals}
 
+public struct GameCost
+{
+    public int bioMassCost;
+    public int metalCost;
+
+    public int getCost(GameResources r)
+    {
+        if (r == GameResources.BioMass) return bioMassCost;
+        else return metalCost;
+    }
+
+    public GameCost(int bioMassCost, int metalCost)
+    {
+        this.bioMassCost = bioMassCost;
+        this.metalCost = metalCost;
+    }
+
+    public GameCost(Dictionary<GameResources, int> resourceCosts)
+    {
+        if (resourceCosts.ContainsKey(GameResources.BioMass))
+        {
+            this.bioMassCost = resourceCosts[GameResources.BioMass];
+        }
+        else this.bioMassCost = 0;
+
+        if (resourceCosts.ContainsKey(GameResources.Metals))
+        {
+            this.metalCost = resourceCosts[GameResources.Metals];
+        }
+        else this.metalCost = 0;
+    }
+
+    public override string ToString()
+    {
+        return GameResources.BioMass + " " + bioMassCost + ", " + GameResources.Metals + " " + metalCost;
+    }
+
+    public static GameCost operator +(GameCost a, GameCost b)
+        => new GameCost(a.bioMassCost + b.bioMassCost, a.metalCost + b.metalCost);
+}
+
 public abstract class Unit
 {
     public UnitType type { get; private set; }
@@ -53,6 +94,13 @@ public abstract class Unit
         return -1;
     }
 
+    public static GameCost getCost(UnitList unit, int number = 1)
+    {
+        Unit u = getUnit(unit);
+
+        return new GameCost(u.resourceCosts[GameResources.BioMass] * number, u.resourceCosts[GameResources.Metals] * number);
+    }
+
     public static Unit getUnit(UnitList unit)
     {
         switch (unit)
@@ -85,17 +133,17 @@ public enum UnitList { Marine, Samurai, Tank, Bomber, Fighter }
 
 public class Marine : Unit
 {
-    public Marine() : base(UnitType.Infantry, "Marine", 1.0f, 0.5f, 1.5f, 10)
+    public Marine() : base(UnitType.Infantry, "Marine", 1.0f, 0.5f, 1.5f, 1)
     {
-        resourceCosts.Add(GameResources.BioMass, 5 * (int)scoreValue);
-        resourceCosts.Add(GameResources.Metals, 1 * (int)scoreValue);
+        resourceCosts.Add(GameResources.BioMass, 6 * (int)scoreValue);
+        resourceCosts.Add(GameResources.Metals, 0 * (int)scoreValue);
     }
 }
 
 
 public class Samurai : Unit
 {
-    public Samurai() : base(UnitType.Infantry, "Samurai", 2.5f, 0.5f, 0.0f, 10)
+    public Samurai() : base(UnitType.Infantry, "Samurai", 2.5f, 0.5f, 0.0f, 1)
     {
         resourceCosts.Add(GameResources.BioMass, 5 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 5 * (int)scoreValue);
@@ -105,7 +153,7 @@ public class Samurai : Unit
 
 public class Tank : Unit
 {
-    public Tank() : base(UnitType.Heavy, "Tank", 1.0f, 2.0f, 0.0f, 300)
+    public Tank() : base(UnitType.Heavy, "Tank", 1.0f, 2.0f, 0.0f, 30)
     {
         resourceCosts.Add(GameResources.BioMass, 1 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 6 * (int)scoreValue);
@@ -115,7 +163,7 @@ public class Tank : Unit
 
 public class Bomber : Unit
 {
-    public Bomber() : base(UnitType.Flying, "Bomber", 0.5f, 2.0f, 0.5f, 200)
+    public Bomber() : base(UnitType.Flying, "Bomber", 0.5f, 2.0f, 0.5f, 20)
     {
         resourceCosts.Add(GameResources.BioMass, 1 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 6 * (int)scoreValue);
@@ -125,7 +173,7 @@ public class Bomber : Unit
 
 public class Fighter : Unit
 {
-    public Fighter() : base(UnitType.Flying, "Fighter", 0.2f, 0.3f, 2.5f, 50)
+    public Fighter() : base(UnitType.Flying, "Fighter", 0.2f, 0.3f, 2.5f, 5)
     {
         resourceCosts.Add(GameResources.BioMass, 1 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 5 * (int)scoreValue);

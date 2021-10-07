@@ -236,4 +236,16 @@ public class Army
 
         return log;
     }
+
+    public GameCost getTotalArmyCost()
+    {
+        GameCost c = new GameCost(0, 0);
+
+        foreach (KeyValuePair<UnitList, int> entry in troops)
+        {
+            c += Unit.getCost(entry.Key, entry.Value);
+        }
+
+        return c;
+    }
 }

@@ -11,7 +11,7 @@ public class BattleManager : MonoBehaviour
     public ArmyDisplayController armyDisplay2;
 
     public float coefLossPerTick = 0.1f;
-    private float minSizeThreshold = 500;
+    private float minSizeThreshold = 1000;
 
     public float tickRoundBattle = 1f; //fight(s) per second
 
@@ -21,6 +21,9 @@ public class BattleManager : MonoBehaviour
     private List<float> scoresB = new List<float>();
 
     private MyFileWriter logger = new MyFileWriter();
+
+
+    public PlayerResources playerResources;
 
     //debug
     //private int c = 0;
@@ -32,14 +35,17 @@ public class BattleManager : MonoBehaviour
 
         //Test battle
 
-        armyA.addTroops(UnitList.Samurai, 10);
-        armyA.addTroops(UnitList.Bomber, 5);
-        armyB.addTroops(UnitList.Tank, 50);
-        armyB.addTroops(UnitList.Marine, 300);
+        armyA.addTroops(UnitList.Samurai, 1000);
+        armyA.addTroops(UnitList.Bomber, 50);
+        armyA.addTroops(UnitList.Fighter, 100);
+        armyB.addTroops(UnitList.Tank, 5);
+        armyB.addTroops(UnitList.Marine, 1650);
         armyB.addTroops(UnitList.Fighter, 100);
 
         armyDisplay.displayArmy(armyA, "ArmyA");
         armyDisplay2.displayArmy(armyB, "ArmyB");
+
+        Debug.Log(armyB.getTotalArmyCost());
     }
 
     public void startBattle()
@@ -166,7 +172,7 @@ public class BattleManager : MonoBehaviour
         bLostAmount *= coef;
 
         //Debug.Log(typeClash + " lossFunction(ascore, bscore) " + lossFunction(ascore, bscore));
-        //Debug.Log("Coef " + coef + " :: " + typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
+        Debug.Log("Coef " + coef + " :" + Mathf.Min(a.armySize, b.armySize) + ": " + typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
 
         //removetroops
 
@@ -181,10 +187,17 @@ public class BattleManager : MonoBehaviour
 
     private float coefFunction(float score)
     {
+        /*
         float a = (1 - coefLossPerTick) / (0 - minSizeThreshold);
         float b = coefLossPerTick - a * minSizeThreshold;
 
-        return a * score + b;
+        return (a * score + b);
+        */
+
+        float a = (coefLossPerTick - 1) / (- minSizeThreshold * minSizeThreshold);
+        float b = -a * 2 * minSizeThreshold;
+
+        return a * score * score + b * score + 1;
     }
 
     //loss in points of A in the fight A vs B (losses of B are 1-lossesOfA)
@@ -212,7 +225,11 @@ public class BattleManager : MonoBehaviour
 
     public void recruitForPlayer(UnitList unit, int number)
     {
-        armyA.addTroops(unit, number);
-        armyDisplay.displayArmy();
+        if(playerResources.tryBuy(Unit.getCost(unit, number)))
+        {
+            armyA.addTroops(unit, number);
+            armyDisplay.displayArmy();
+        }
+
     }
 }
