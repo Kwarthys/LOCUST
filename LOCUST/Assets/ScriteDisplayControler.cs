@@ -5,36 +5,52 @@ using UnityEngine.UI;
 
 public class ScriteDisplayControler : MonoBehaviour
 {
-    private Image i;
+    public RawImage i;
+
+    private Material m;
+    public Material source;
 
     public int squareSize = 50;
 
     public Color triangleColor;
+    public Color pointColor;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        i = GetComponent<Image>();
-
-        i.material.mainTexture = buildTexture();
-    }
-
-    private Texture2D buildTexture()
+    private Texture2D buildTexture(float vI, float vH)
     {
         Texture2D tx = new Texture2D(squareSize, squareSize);
 
-        Color background = new Color(1, 1, 1, 0);
+        Color background = triangleColor;
+        background.a = 0;
         Color[] colors = getColorArray(background, squareSize * squareSize);
         tx.SetPixels(colors);
 
-        drawEquiTriangle(tx, triangleColor,3,0);
+
+        drawTriangleDisplay(tx, triangleColor, vI, vH);
 
         tx.Apply();
 
         return tx;
     }
 
-    private void drawEquiTriangle(Texture2D tex, Color c, float vI, float vH)
+    private void initComponent()
+    {
+        m = new Material(source);
+        i.material = m;
+
+        rebuildFor(1, 1);
+    }
+
+    public void rebuildFor(float vI, float vH)
+    {
+        //i.material.mainTexture = buildTexture(vI,vH);
+        if(m==null)
+        {
+            initComponent();
+        }
+        m.SetTexture("_MainTex",buildTexture(vI, vH));
+    }
+
+    private void drawTriangleDisplay(Texture2D tex, Color c, float vI, float vH)
     {
         float s = 0.9f * squareSize;
         float h = s * Mathf.Sqrt(3) / 2;
@@ -44,9 +60,10 @@ public class ScriteDisplayControler : MonoBehaviour
         Vector2Int left = new Vector2Int(Mathf.RoundToInt((squareSize - s) / 2), Mathf.RoundToInt(vpadding));
         Vector2Int right = new Vector2Int(Mathf.RoundToInt((squareSize + s) / 2), Mathf.RoundToInt(vpadding));
 
-        drawRoundedSegment(tex, top, left, c, 5);
-        drawRoundedSegment(tex, top, right, c, 5);
-        drawRoundedSegment(tex, right, left, c, 5);
+        int w = 10;
+        drawRoundedSegment(tex, top, left, c, w);
+        drawRoundedSegment(tex, top, right, c, w);
+        drawRoundedSegment(tex, right, left, c, w);
 
         //finding pointScore
         float tvI = vI / 3 * h + vpadding; //line is y=tvI or y-tvI=0
@@ -65,7 +82,7 @@ public class ScriteDisplayControler : MonoBehaviour
         float yp = tvI;
         Vector2Int point = new Vector2Int(Mathf.RoundToInt(xp), Mathf.RoundToInt(yp));
 
-        drawCircle(tex, point, 10, Color.black);
+        drawCircle(tex, point, w*2, pointColor);
     }
 
     private void drawRoundedSegment(Texture2D tex, Vector2Int pointA, Vector2Int pointB, Color c, int width = 1)

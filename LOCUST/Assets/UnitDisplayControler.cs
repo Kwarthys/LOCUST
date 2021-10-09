@@ -12,6 +12,9 @@ public class UnitDisplayControler : MonoBehaviour
     public TextMeshProUGUI unitVH;
     public TextMeshProUGUI unitVF;
 
+    public GameObject scoreDisplayPrefab;
+    public RectTransform scoreDisplayHolder;
+
     public float number = -1;
 
     public void displayUnit()
@@ -30,6 +33,10 @@ public class UnitDisplayControler : MonoBehaviour
         setScore(unitVI, UnitType.Infantry);
         setScore(unitVH, UnitType.Heavy);
         setScore(unitVF, UnitType.Flying);
+
+        ScriteDisplayControler scoreDisplay = Instantiate(scoreDisplayPrefab, scoreDisplayHolder).GetComponent<ScriteDisplayControler>();
+
+        scoreDisplay.rebuildFor(toDisplay.vInfantryScore, toDisplay.vHeavyScore);
     }
 
     private void setScore(TextMeshProUGUI slot, UnitType scoreAgainst)
