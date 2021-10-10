@@ -39,7 +39,8 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    m_Floats: []
+    m_Floats:
+    - _seaLevel: 0.5
     m_Colors:
     - _elevationMinMax: {r: 0.12485149, g: 0.7980276, b: 0, a: 0}
   m_BuildTextureStacks: []

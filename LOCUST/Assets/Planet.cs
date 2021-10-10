@@ -108,6 +108,8 @@ public class Planet : MonoBehaviour
         tex.Apply();
 
         faceMaterial.SetTexture("_planetTexture", tex);
+
+        faceMaterial.SetFloat("_seaLevel", settings.min);
     }
 
     void generateColors()

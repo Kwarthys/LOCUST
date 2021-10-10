@@ -28,11 +28,11 @@ public class TerrainGenerator
 
         unscaledElevation = h;
 
+        elevationMinMax.register(unscaledElevation);
+
         h = Mathf.Max(settings.min, h);
 
         h = settings.radius * (h + 1);
-
-        elevationMinMax.register(unscaledElevation);
 
         return pointOnSphere * h;
     }
