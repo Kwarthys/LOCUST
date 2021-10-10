@@ -21,6 +21,8 @@ public class ArmyBuilderControler : MonoBehaviour
             unitListSelector.options.Add(new TMP_Dropdown.OptionData() { text = u.ToString() });
         }
 
+        unitListSelector.value = 1;
+
         unitListSelector.onValueChanged.AddListener(delegate { selectedOnChange(); });
         numberInput.onValueChanged.AddListener(delegate { selectedOnChange(); });
     }
@@ -37,7 +39,7 @@ public class ArmyBuilderControler : MonoBehaviour
 
     public void recruitTroops()
     {
-        Debug.Log(getInputInt() + " " + Unit.getUnit((UnitList)unitListSelector.value).name);
+        //Debug.Log(getInputInt() + " " + Unit.getUnit((UnitList)unitListSelector.value).name);
         battleManager.recruitForPlayer((UnitList)unitListSelector.value, getInputInt());
     }
 

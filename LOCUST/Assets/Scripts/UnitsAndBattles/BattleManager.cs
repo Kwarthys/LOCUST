@@ -11,7 +11,7 @@ public class BattleManager : MonoBehaviour
     public ArmyDisplayController armyDisplay2;
 
     public float coefLossPerTick = 0.1f;
-    private float minSizeThreshold = 1000;
+    private float minSizeThreshold = 2000;
 
     public float tickRoundBattle = 1f; //fight(s) per second
 
@@ -45,7 +45,7 @@ public class BattleManager : MonoBehaviour
         armyDisplay.displayArmy(armyA, "ArmyA");
         armyDisplay2.displayArmy(armyB, "ArmyB");
 
-        Debug.Log(armyB.getTotalArmyCost());
+        //Debug.Log(armyB.getTotalArmyCost());
     }
 
     public void startBattle()
@@ -60,38 +60,8 @@ public class BattleManager : MonoBehaviour
 
         if (armyA.isEmpty() || armyB.isEmpty())
         {
-            combat(armyA, armyB);
-            timer.stop();
-
-            string print = "[";
-            for(int i = 0; i < scoresA.Count; ++i)
-            {
-                print += scoresA[i];
-                if(i< scoresA.Count-1)
-                {
-                    print += ", ";
-                }
-            }
-            print += "]";
-
-            Debug.Log(print);
-
-            print = "[";
-            for (int i = 0; i < scoresB.Count; ++i)
-            {
-                print += scoresB[i];
-                if (i < scoresB.Count - 1)
-                {
-                    print += ", ";
-                }
-            }
-            print += "]";
-
-            Debug.Log(print);
-
             logger.writeLog("ArmyA", scoresA, false);
             logger.writeLog("ArmyB", scoresB);
-
 
             return;
         }
@@ -172,7 +142,7 @@ public class BattleManager : MonoBehaviour
         bLostAmount *= coef;
 
         //Debug.Log(typeClash + " lossFunction(ascore, bscore) " + lossFunction(ascore, bscore));
-        Debug.Log("Coef " + coef + " :" + Mathf.Min(a.armySize, b.armySize) + ": " + typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
+        //Debug.Log("Coef " + coef + " :" + Mathf.Min(a.armySize, b.armySize) + ": " + typeClash + "Clash " + ascore + " A vs B " + bscore + ". A lost " + aLostAmount + ". B lost " + bLostAmount);
 
         //removetroops
 

@@ -10,14 +10,21 @@ public class ArmyDisplayController : MonoBehaviour
     public string armyName = "";
 
     public TextMeshProUGUI armyNameTxt;
-    public TextMeshProUGUI armyVI;
-    public TextMeshProUGUI armyVH;
-    public TextMeshProUGUI armyVF;
 
     private ArmyScore armyScore;
 
     public GameObject unitDisplayControlerPrefab;
     public RectTransform unitDisplayHolder;
+
+    public GameObject scoreDisplayPrefab;
+    public RectTransform scoreDisplayHolder;
+
+    private ScriteDisplayControler scoreDisplay;
+
+    public void Start()
+    {
+        scoreDisplay = Instantiate(scoreDisplayPrefab, scoreDisplayHolder).GetComponent<ScriteDisplayControler>();
+    }
 
     public void displayArmy(Army toDisplay, string armyName)
     {
@@ -34,10 +41,6 @@ public class ArmyDisplayController : MonoBehaviour
 
         armyNameTxt.text = armyName + " : " + armyScore.armySize;
 
-        setScore(armyVI, UnitType.Infantry);
-        setScore(armyVH, UnitType.Heavy);
-        setScore(armyVF, UnitType.Flying);
-
         foreach (Transform child in unitDisplayHolder)
         {
             Destroy(child.gameObject); //F
@@ -51,31 +54,14 @@ public class ArmyDisplayController : MonoBehaviour
             unitDisplay.number = toDisplay.troops[unit];
             unitDisplay.displayUnit();
         }
-    }
 
-    private void setScore(TextMeshProUGUI slot, UnitType scoreAgainst)
-    {
-        if (slot != null)
-        {
-            switch (scoreAgainst)
-            {
-                case UnitType.Infantry:
-                    slot.text = "<b>vI : </b>";
-                    break;
+        float meanScore = (armyScore.getTotalVersusType(UnitType.Infantry) + armyScore.getTotalVersusType(UnitType.Heavy) + armyScore.getTotalVersusType(UnitType.Flying))/3;
+        float vI = armyScore.getTotalVersusType(UnitType.Infantry) / meanScore;
+        float vH = armyScore.getTotalVersusType(UnitType.Heavy) / meanScore;
 
-                case UnitType.Heavy:
-                    slot.text = "<b>vH : </b>";
-                    break;
+        float iSize = armyScore.perTypePercent[UnitType.Infantry] * 3;
+        float hSize = armyScore.perTypePercent[UnitType.Heavy] * 3;
 
-                case UnitType.Flying:
-                    slot.text = "<b>vF : </b>";
-                    break;
-
-                default:
-                    slot.text = "error ";
-                    break;
-            }
-            slot.text += armyScore.getTotalVersusType(scoreAgainst).ToString();
-        }
+        scoreDisplay.rebuildFor(vI, vH, iSize, hSize);
     }
 }

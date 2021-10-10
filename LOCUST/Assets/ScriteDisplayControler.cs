@@ -7,6 +7,7 @@ public class ScriteDisplayControler : MonoBehaviour
 {
     public RawImage i;
 
+    private Texture2D tex;
     private Material m;
     public Material source;
 
@@ -14,22 +15,14 @@ public class ScriteDisplayControler : MonoBehaviour
 
     public Color triangleColor;
     public Color pointColor;
+    public Color secondPointColor;
 
-    private Texture2D buildTexture(float vI, float vH)
+    private void cleanTexture(Texture2D tex)
     {
-        Texture2D tx = new Texture2D(squareSize, squareSize);
-
         Color background = triangleColor;
         background.a = 0;
         Color[] colors = getColorArray(background, squareSize * squareSize);
-        tx.SetPixels(colors);
-
-
-        drawTriangleDisplay(tx, triangleColor, vI, vH);
-
-        tx.Apply();
-
-        return tx;
+        tex.SetPixels(colors);
     }
 
     private void initComponent()
@@ -37,20 +30,38 @@ public class ScriteDisplayControler : MonoBehaviour
         m = new Material(source);
         i.material = m;
 
+        tex = new Texture2D(squareSize, squareSize);
+        m.SetTexture("_MainTex", tex);
+
         rebuildFor(1, 1);
     }
 
     public void rebuildFor(float vI, float vH)
     {
+        rebuildFor(vI, vH, -1, -1);
+    }
+
+    public void rebuildFor(float vI, float vH, float i2, float h2)
+    {
         //i.material.mainTexture = buildTexture(vI,vH);
-        if(m==null)
+        if (m == null)
         {
             initComponent();
         }
-        m.SetTexture("_MainTex",buildTexture(vI, vH));
+
+        cleanTexture(tex);
+
+        drawTriangleDisplay(tex, triangleColor, pointColor, vI, vH);
+
+        if(i2 != -1)
+        {
+            drawTriangleDisplay(tex, triangleColor, secondPointColor, i2, h2, false);
+        }
+
+        tex.Apply();
     }
 
-    private void drawTriangleDisplay(Texture2D tex, Color c, float vI, float vH)
+    private void drawTriangleDisplay(Texture2D tex, Color triangleColor, Color pointColor, float vI, float vH, bool drawTriangle = true)
     {
         float s = 0.9f * squareSize;
         float h = s * Mathf.Sqrt(3) / 2;
@@ -61,9 +72,13 @@ public class ScriteDisplayControler : MonoBehaviour
         Vector2Int right = new Vector2Int(Mathf.RoundToInt((squareSize + s) / 2), Mathf.RoundToInt(vpadding));
 
         int w = 10;
-        drawRoundedSegment(tex, top, left, c, w);
-        drawRoundedSegment(tex, top, right, c, w);
-        drawRoundedSegment(tex, right, left, c, w);
+
+        if(drawTriangle)
+        {
+            drawRoundedSegment(tex, top, left, triangleColor, w);
+            drawRoundedSegment(tex, top, right, triangleColor, w);
+            drawRoundedSegment(tex, right, left, triangleColor, w);
+        }
 
         //finding pointScore
         float tvI = vI / 3 * h + vpadding; //line is y=tvI or y-tvI=0
@@ -83,6 +98,11 @@ public class ScriteDisplayControler : MonoBehaviour
         Vector2Int point = new Vector2Int(Mathf.RoundToInt(xp), Mathf.RoundToInt(yp));
 
         drawCircle(tex, point, w*2, pointColor);
+    }
+
+    private void drawPointOnTriangle(Vector2Int top, Vector2Int left, Vector2Int right, float scoreI, float scoreH )
+    {
+
     }
 
     private void drawRoundedSegment(Texture2D tex, Vector2Int pointA, Vector2Int pointB, Color c, int width = 1)
