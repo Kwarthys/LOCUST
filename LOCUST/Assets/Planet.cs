@@ -59,7 +59,7 @@ public class Planet : MonoBehaviour
 
         if(tex==null)
         {
-            tex = new Texture2D(texResolution, 2);
+            tex = new Texture2D(texResolution, 2, TextureFormat.ARGB32, false);
         }
 
         if(filters == null || filters.Length == 0)

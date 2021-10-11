@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TerrainGenerator
 {
-    private NoiseSettings settings;
+    public NoiseSettings settings;
 
     private NoiseFilter noise;
 
