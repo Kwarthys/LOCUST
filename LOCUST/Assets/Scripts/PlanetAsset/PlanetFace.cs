@@ -44,7 +44,9 @@ public class PlanetFace
                 Vector3 pointOnSphere = point.normalized;
                 vertices[index] = generator.getPointOnPlanet(pointOnSphere, out float unscaledElevation);
 
-                uv[index] = new Vector2(unscaledElevation, 0);
+                Vector3 longitudeHelper = new Vector3(pointOnSphere.x, 0, pointOnSphere.z);
+
+                uv[index] = new Vector2(unscaledElevation, Vector3.Angle(longitudeHelper, Vector3.forward));
 
                 if(j!=resolution-1 && i!=resolution-1)
                 {

@@ -28,8 +28,6 @@ public class Planet : MonoBehaviour
     private MeshFilter[] filters;
     private PlanetFace[] faces;
 
-    public Color planetColor;
-
     private TerrainGenerator generator;
 
     public Material faceMaterial;
@@ -55,7 +53,7 @@ public class Planet : MonoBehaviour
 
     void init()
     {        
-        generator = new TerrainGenerator(settings);//radius, layers, speed, strength, amplitudePersistence, speedIncrease, min, offset);
+        generator = new TerrainGenerator(settings, System.DateTime.Now.Millisecond);//radius, layers, speed, strength, amplitudePersistence, speedIncrease, min, offset);
 
         if(tex==null)
         {
@@ -94,14 +92,35 @@ public class Planet : MonoBehaviour
         }
 
         faceMaterial.SetVector("_elevationMinMax", new Vector4(generator.elevationMinMax.min, generator.elevationMinMax.max));
+    }
 
+
+    void generateColors()
+    {
         Color[] colors = new Color[texResolution];
         Color[] waterColors = new Color[texResolution];
+
+        Color oceanBaseColor = oceanColors.Evaluate(Random.value);
+        Gradient selectedOcean = new Gradient();
+        GradientColorKey[] oceanKeys = new GradientColorKey[2];
+        GradientAlphaKey[] alphaKeys = new GradientAlphaKey[2];
+
+        oceanKeys[0].color = oceanBaseColor;
+        oceanKeys[0].time = 0;
+        alphaKeys[0].alpha = 1;
+        alphaKeys[0].time = 0;        
+
+        oceanKeys[1].color = Color.Lerp(oceanBaseColor, Color.white, 0.7f);
+        oceanKeys[1].time = 5f;
+        alphaKeys[1].alpha = 1;
+        alphaKeys[1].time = 5f;
+
+        selectedOcean.SetKeys(oceanKeys, alphaKeys);
 
         for (int i = 0; i < texResolution; ++i)
         {
             colors[i] = elevationColors.Evaluate(i / (texResolution - 1f));
-            waterColors[i] = oceanColors.Evaluate(i / (texResolution - 1f));
+            waterColors[i] = selectedOcean.Evaluate(i / (texResolution - 1f));
         }
         tex.SetPixels(0, 0, texResolution, 1, colors);
         tex.SetPixels(0, 1, texResolution, 1, waterColors);
@@ -111,12 +130,5 @@ public class Planet : MonoBehaviour
 
         faceMaterial.SetFloat("_seaLevel", settings.min);
     }
-
-    void generateColors()
-    {
-        foreach(MeshFilter f in filters)
-        {
-            f.GetComponent<MeshRenderer>().sharedMaterial.color = planetColor;
-        }
-    }
+    
 }

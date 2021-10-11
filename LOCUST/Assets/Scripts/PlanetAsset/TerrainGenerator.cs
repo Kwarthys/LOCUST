@@ -6,14 +6,14 @@ public class TerrainGenerator
 {
     public NoiseSettings settings;
 
-    private NoiseFilter noise;
+    public NoiseFilter noise;
 
     public MinMax elevationMinMax;
 
-    public TerrainGenerator(NoiseSettings settings)
+    public TerrainGenerator(NoiseSettings settings, int seed)
     {
         this.settings = settings;
-        noise = new NoiseFilter();
+        noise = new NoiseFilter(seed);
         elevationMinMax = new MinMax();
     }
 
@@ -40,7 +40,12 @@ public class TerrainGenerator
 
 public class NoiseFilter
 {
-    private Noise noise = new Noise();
+    private Noise noise;
+
+    public NoiseFilter(int seed)
+    {
+        noise = new Noise(seed);
+    }
 
     public float evaluate(Vector3 point)
     {
