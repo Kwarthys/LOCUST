@@ -19,6 +19,8 @@ public class NoiseSettings
 
 public class Planet : MonoBehaviour
 {
+    public GameObject planetMarkerPrefab;
+
     [Range(2,256)]
     public int resolution = 20;
 
@@ -43,6 +45,14 @@ public class Planet : MonoBehaviour
     private void Start()
     {
         generatePlanet();
+
+        foreach(Vector3 p in getRandomPoints())
+        {
+            if(p.magnitude>0)
+            {
+                Instantiate(planetMarkerPrefab, p, Quaternion.LookRotation(-p), transform);
+            }
+        }
     }
 
     private void Update()
@@ -148,6 +158,20 @@ public class Planet : MonoBehaviour
         faceMaterial.SetTexture("_planetTexture", tex);
 
         faceMaterial.SetFloat("_seaLevel", settings.min);
+    }
+
+    public Vector3[] getRandomPoints()
+    {
+        Vector3[] ps = new Vector3[faces.Length];
+
+        for(int i = 0; i < faces.Length; ++i)
+        {
+            ps[i] = faces[i].getRandomOnLandPoint();
+
+            //Debug.Log(ps[i]);
+        }
+
+        return ps;
     }
     
 }

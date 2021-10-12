@@ -25,6 +25,32 @@ public class PlanetFace
         axisB = Vector3.Cross(up, axisA);
     }
 
+    public Vector3 getRandomOnLandPoint()
+    {
+        Vector3 point = Vector3.zero;
+        float elevation = -1;
+        int maxTries = 1000;
+        Vector3[] v = mesh.vertices;
+        
+        while(elevation < (generator.settings.min + generator.settings.radius)*1.1f && maxTries > 0)
+        {
+            maxTries--;
+
+            int x = (int)((Random.value * 0.8f + 0.1f) * resolution);
+            int y = (int)((Random.value * 0.8f + 0.1f) * resolution);
+
+            point = v[x + y*resolution];
+            elevation = point.magnitude;
+        }
+
+        if(maxTries==0)
+        {
+            return Vector3.zero;
+        }
+
+        return point;
+    }
+
     public void constructMesh()
     {
         Vector3[] vertices = new Vector3[resolution * resolution];
