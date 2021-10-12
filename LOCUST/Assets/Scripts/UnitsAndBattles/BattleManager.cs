@@ -16,6 +16,9 @@ public class BattleManager : MonoBehaviour
     public float tickRoundBattle = 1f; //fight(s) per second
 
     public TimedCallBack timer;
+    public TimedCallBack redraw;
+
+    public float refreshRate = 1;
 
     private List<float> scoresA = new List<float>();
     private List<float> scoresB = new List<float>();
@@ -31,6 +34,7 @@ public class BattleManager : MonoBehaviour
     void Start()
     {
         timer.setup(tickRoundBattle, new TimerCallBack(this), false);
+        redraw.setup(refreshRate, new TimerRedrawCallBack(this), true);
         //timer.go();
 
         //Test battle
@@ -51,6 +55,7 @@ public class BattleManager : MonoBehaviour
     public void startBattle()
     {
         timer.go();
+        redraw.go();
     }
 
     public void fight()
@@ -62,6 +67,9 @@ public class BattleManager : MonoBehaviour
         {
             logger.writeLog("ArmyA", scoresA, false);
             logger.writeLog("ArmyB", scoresB);
+
+            timer.stop();
+            redraw.stop();
 
             return;
         }
@@ -77,9 +85,6 @@ public class BattleManager : MonoBehaviour
         //Debug.Log("Gives");
         //Debug.Log("A: " + armyA);
         //Debug.Log("B: " + armyB);
-        
-        armyDisplay.displayArmy();
-        armyDisplay2.displayArmy();
 
         /*
         c++;
@@ -178,6 +183,12 @@ public class BattleManager : MonoBehaviour
         return scoreB * scoreB / (scoreB * scoreB + scoreA * scoreA);
     }
 
+    public void redrawArmies()
+    {
+        armyDisplay.displayArmy();
+        armyDisplay2.displayArmy();
+    }
+
     public class TimerCallBack : IMyCallBack
     {
         private BattleManager toCall;
@@ -190,6 +201,21 @@ public class BattleManager : MonoBehaviour
         public void call()
         {
             toCall.fight();
+        }
+    }
+
+    public class TimerRedrawCallBack : IMyCallBack
+    {
+        private BattleManager toCall;
+
+        public TimerRedrawCallBack(BattleManager toCall)
+        {
+            this.toCall = toCall;
+        }
+
+        public void call()
+        {
+            toCall.redrawArmies();
         }
     }
 

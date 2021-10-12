@@ -92,6 +92,8 @@ public class Army
 {
     public Dictionary<UnitList, int> troops = new Dictionary<UnitList, int>();
 
+    private float scoreOverflow = 0;
+
     public void addTroops(UnitList unit, int number)
     {
         if(troops.ContainsKey(unit))
@@ -128,6 +130,9 @@ public class Army
     {
         List<UnitList> troopSubList = getTroopsOfType(filter);
 
+        pointsToRemove += scoreOverflow;
+        scoreOverflow = 0;
+
         while (pointsToRemove > 0 && troopSubList.Count > 0)
         {
             UnitList unitToHurt = troopSubList[(int)(Random.value * troopSubList.Count)];
@@ -150,6 +155,7 @@ public class Army
                     {
                         //survived
                         //Debug.Log(unitToHurt + "Dodged");
+                        scoreOverflow = pointsToRemove;
                     }
 
                     pointsToRemove = 0;

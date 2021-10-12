@@ -49,21 +49,20 @@ public struct GameCost
 public abstract class Unit
 {
     public UnitType type { get; private set; }
+    public UnitList unitName { get; private set; }
 
-    public float vInfantryScore { get; private set; }
+public float vInfantryScore { get; private set; }
     public float vHeavyScore { get; private set; }
     public float vFlyingScore { get; private set; }
 
     public Dictionary<GameResources, int> resourceCosts = new Dictionary<GameResources, int>();
 
-    public string name { get; private set; }
-
     public float scoreValue { get; private set; }
 
-    public Unit(UnitType type, string name, float vi, float vh, float vf, float scoreValue)
+    public Unit(UnitType type, UnitList unitName, float vi, float vh, float vf, float scoreValue)
     {
         this.type = type;
-        this.name = name;
+        this.unitName = unitName;
 
         vInfantryScore = vi;
         vHeavyScore = vh;
@@ -71,7 +70,7 @@ public abstract class Unit
 
         if (Mathf.RoundToInt(vi*10+vh*10+vf*10) != 3*10) //Float imprecision showing up here
         {
-            Debug.LogError(name + " stats not adding up to 3 : " + vi + " + " + vh + " + " + vf);
+            Debug.LogError(unitName + " stats not adding up to 3 : " + vi + " + " + vh + " + " + vf);
         }
 
         this.scoreValue = scoreValue;
@@ -133,7 +132,7 @@ public enum UnitList { Marine, Samurai, Tank, Bomber, Fighter }
 
 public class Marine : Unit
 {
-    public Marine() : base(UnitType.Infantry, "Marine", 1.0f, 0.5f, 1.5f, 1)
+    public Marine() : base(UnitType.Infantry, UnitList.Marine, 1.0f, 0.5f, 1.5f, 1)
     {
         resourceCosts.Add(GameResources.BioMass, 6 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 0 * (int)scoreValue);
@@ -143,7 +142,7 @@ public class Marine : Unit
 
 public class Samurai : Unit
 {
-    public Samurai() : base(UnitType.Infantry, "Samurai", 2.5f, 0.5f, 0.0f, 1)
+    public Samurai() : base(UnitType.Infantry, UnitList.Samurai, 2.5f, 0.5f, 0.0f, 1)
     {
         resourceCosts.Add(GameResources.BioMass, 5 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 5 * (int)scoreValue);
@@ -153,7 +152,7 @@ public class Samurai : Unit
 
 public class Tank : Unit
 {
-    public Tank() : base(UnitType.Heavy, "Tank", 1.0f, 2.0f, 0.0f, 30)
+    public Tank() : base(UnitType.Heavy, UnitList.Tank, 1.0f, 2.0f, 0.0f, 30)
     {
         resourceCosts.Add(GameResources.BioMass, 1 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 6 * (int)scoreValue);
@@ -163,7 +162,7 @@ public class Tank : Unit
 
 public class Bomber : Unit
 {
-    public Bomber() : base(UnitType.Flying, "Bomber", 0.5f, 2.0f, 0.5f, 20)
+    public Bomber() : base(UnitType.Flying, UnitList.Bomber, 0.5f, 2.0f, 0.5f, 20)
     {
         resourceCosts.Add(GameResources.BioMass, 1 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 6 * (int)scoreValue);
@@ -173,7 +172,7 @@ public class Bomber : Unit
 
 public class Fighter : Unit
 {
-    public Fighter() : base(UnitType.Flying, "Fighter", 0.2f, 0.3f, 2.5f, 5)
+    public Fighter() : base(UnitType.Flying, UnitList.Fighter, 0.2f, 0.3f, 2.5f, 5)
     {
         resourceCosts.Add(GameResources.BioMass, 1 * (int)scoreValue);
         resourceCosts.Add(GameResources.Metals, 5 * (int)scoreValue);
