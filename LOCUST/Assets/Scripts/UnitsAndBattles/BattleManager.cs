@@ -16,7 +16,6 @@ public class BattleManager : MonoBehaviour
     public float tickRoundBattle = 1f; //fight(s) per second
 
     public TimedCallBack timer;
-    public TimedCallBack redraw;
 
     public float refreshRate = 1;
 
@@ -24,6 +23,9 @@ public class BattleManager : MonoBehaviour
     private List<float> scoresB = new List<float>();
 
     private MyFileWriter logger = new MyFileWriter();
+
+    private int battleTickTimerIndex;
+    private int redrawTimerIndex;
 
 
     public PlayerResources playerResources;
@@ -33,8 +35,8 @@ public class BattleManager : MonoBehaviour
 
     void Start()
     {
-        timer.setup(tickRoundBattle, new TimerCallBack(this), false);
-        redraw.setup(refreshRate, new TimerRedrawCallBack(this), true);
+        battleTickTimerIndex = timer.setup(new TimerSettings(tickRoundBattle, new TimerCallBack(this), false));
+        redrawTimerIndex = timer.setup(new TimerSettings(refreshRate, new TimerRedrawCallBack(this), true));
         //timer.go();
 
         //Test battle
@@ -54,8 +56,8 @@ public class BattleManager : MonoBehaviour
 
     public void startBattle()
     {
-        timer.go();
-        redraw.go();
+        timer.go(battleTickTimerIndex);
+        timer.go(redrawTimerIndex);
     }
 
     public void fight()
@@ -68,8 +70,8 @@ public class BattleManager : MonoBehaviour
             logger.writeLog("ArmyA", scoresA, false);
             logger.writeLog("ArmyB", scoresB);
 
-            timer.stop();
-            redraw.stop();
+            timer.stop(battleTickTimerIndex);
+            timer.stop(redrawTimerIndex);
 
             return;
         }

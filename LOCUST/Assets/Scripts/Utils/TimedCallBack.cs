@@ -2,43 +2,71 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public class TimerSettings
+{
+    public float timeToWait;
+    public float startTime;
+    public bool tickInstant;
+    public bool running = false;
+
+    public IMyCallBack cb;
+
+    public TimerSettings(float timeToWait, IMyCallBack cb, bool tickInstant = false)
+    {
+        this.timeToWait = timeToWait;
+        this.cb = cb;
+        this.tickInstant = tickInstant;
+    }
+}
+
 public class TimedCallBack : MonoBehaviour
 {
-    private float timeToWait;
-    private float startTime;
-    private bool tickInstant;
-    private bool running = false;
+    private List<TimerSettings> timers = new List<TimerSettings>();
 
-    private IMyCallBack cb;
-
-    public void setup(float timeToTick, IMyCallBack cb, bool tickInstant = false)
+    public int setup(TimerSettings timer)
     {
-        this.timeToWait = timeToTick;
-        this.tickInstant = tickInstant;
-        this.cb = cb;
+        timers.Add(timer);
+        return timers.Count - 1;//returning the index of the newly added timer for further referencing
     }
 
-    public void stop()
+    //putting this here, but trying not to use it
+    public int getIndexOfTimer(TimerSettings timer)
     {
-        running = false;
+        return timers.IndexOf(timer);
     }
 
-    public void go()
+    public void stop(int timerIndex)
     {
-        startTime = Time.realtimeSinceStartup - (tickInstant ? timeToWait : 0);
-        running = true;
+        timers[timerIndex].running = false;
+    }
+
+    public void destroy(int timerIndex)
+    {
+        timers[timerIndex] = null;//keeping that index taken to avoid changing all indecies of following timers
+    }
+
+    public void go(int timerIndex)
+    {
+        timers[timerIndex].startTime = Time.realtimeSinceStartup - (timers[timerIndex].tickInstant ? timers[timerIndex].timeToWait : 0);
+        timers[timerIndex].running = true;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(running)
+        foreach(TimerSettings timer in timers)
         {
-            //Debug.Log(Time.realtimeSinceStartup + " - " + startTime + " > " + timeToWait + " ? ");
-            if(Time.realtimeSinceStartup - startTime > timeToWait)
+            if(timer != null)
             {
-                cb.call();
-                startTime = Time.realtimeSinceStartup;
+                if(timer.running)
+                {
+                    if(Time.realtimeSinceStartup - timer.startTime > timer.timeToWait)
+                    {
+                        timer.cb.call();
+                        timer.startTime = Time.realtimeSinceStartup;
+                    }
+                }
             }
         }
     }

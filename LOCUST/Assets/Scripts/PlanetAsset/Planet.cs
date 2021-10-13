@@ -42,15 +42,20 @@ public class Planet : MonoBehaviour
 
     public bool generate = false;
 
+    public List<Vector3> surfacePoints = new List<Vector3>();
+
     private void Start()
     {
         generatePlanet();
 
-        foreach(Vector3 p in getRandomPoints())
+        surfacePoints.Clear();
+
+        foreach (Vector3 p in getRandomPoints())
         {
             if(p.magnitude>0)
             {
-                Instantiate(planetMarkerPrefab, p, Quaternion.LookRotation(-p), transform);
+                surfacePoints.Add(p);
+                //Instantiate(planetMarkerPrefab, p, Quaternion.LookRotation(-p), transform);
             }
         }
     }
