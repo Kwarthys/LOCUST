@@ -44,6 +44,19 @@ public class TimedCallBack : MonoBehaviour
     public void destroy(int timerIndex)
     {
         timers[timerIndex] = null;//keeping that index taken to avoid changing all indecies of following timers
+
+
+        bool found = false;
+        for(int i = timers.Count-1; !found && i >= 0; --i) //starting at the end
+        {
+            found = timers[i] != null;
+        }
+
+        if(!found)
+        {
+            //list does not contain any in use timers, we can then reset it
+            timers.Clear();
+        }
     }
 
     public void go(int timerIndex)

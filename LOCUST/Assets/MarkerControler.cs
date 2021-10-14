@@ -6,6 +6,7 @@ public class MarkerControler : MonoBehaviour
 {
     public MeshFilter mFilter;
     public MeshRenderer mRenderer;
+    public MeshCollider mCollider;
 
     public int pyramidFaces = 6;
     public float pyramidHeigth = 0.5f;
@@ -31,6 +32,7 @@ public class MarkerControler : MonoBehaviour
         {
             mesh = new Mesh();
             mFilter.sharedMesh = mesh;
+            if(mCollider != null)mCollider.sharedMesh = mesh;
         }
         else
         {

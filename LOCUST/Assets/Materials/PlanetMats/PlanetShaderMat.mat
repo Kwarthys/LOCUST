@@ -49,5 +49,5 @@ Material:
     - _seaLevel: 0.5
     m_Colors:
     - Vector2_d15b721957b148e680eed0d3921f4e58: {r: 1, g: 0, b: 0, a: 0}
-    - _elevationMinMax: {r: 0.10391689, g: 0.7807679, b: 0, a: 0}
+    - _elevationMinMax: {r: 0.123010635, g: 0.83178216, b: 0, a: 0}
   m_BuildTextureStacks: []

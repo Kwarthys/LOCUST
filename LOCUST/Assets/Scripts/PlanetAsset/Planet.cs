@@ -44,6 +44,8 @@ public class Planet : MonoBehaviour
 
     public List<Vector3> surfacePoints = new List<Vector3>();
 
+    public bool generated = false;
+
     private void Start()
     {
         generatePlanet();
@@ -58,14 +60,20 @@ public class Planet : MonoBehaviour
                 //Instantiate(planetMarkerPrefab, p, Quaternion.LookRotation(-p), transform);
             }
         }
+        Debug.Log("Generated : SP " + surfacePoints.Count);
+        generated = true;
     }
 
     private void Update()
     {
         if(generate)
         {
+            generated = false;
+
             generatePlanet();
             generate = false;
+
+            generated = true;
         }
     }
 
@@ -76,8 +84,6 @@ public class Planet : MonoBehaviour
         generateColors();
 
         generate = false;
-
-        Debug.Log("generated");
     }
 
     //private void OnValidate()

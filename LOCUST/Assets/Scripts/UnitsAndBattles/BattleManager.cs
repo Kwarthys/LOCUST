@@ -10,7 +10,7 @@ public class BattleManager : MonoBehaviour
     public ArmyDisplayController armyDisplay;
     public ArmyDisplayController armyDisplay2;
 
-    public float coefLossPerTick = 0.1f;
+    public float coefLossPerTick = 0.01f;
     private float minSizeThreshold = 2000;
 
     public float tickRoundBattle = 1f; //fight(s) per second
@@ -40,7 +40,7 @@ public class BattleManager : MonoBehaviour
         //timer.go();
 
         //Test battle
-
+        /*
         armyA.addTroops(UnitList.Samurai, 1000);
         armyA.addTroops(UnitList.Bomber, 50);
         armyA.addTroops(UnitList.Fighter, 100);
@@ -50,14 +50,20 @@ public class BattleManager : MonoBehaviour
 
         armyDisplay.displayArmy(armyA, "ArmyA");
         armyDisplay2.displayArmy(armyB, "ArmyB");
-
+        */
         //Debug.Log(armyB.getTotalArmyCost());
     }
 
     public void startBattle()
     {
         timer.go(battleTickTimerIndex);
-        timer.go(redrawTimerIndex);
+        //timer.go(redrawTimerIndex);
+    }
+
+    public void setDrawingState(bool state)
+    {
+        if (state) timer.go(redrawTimerIndex);
+        else timer.stop(redrawTimerIndex);
     }
 
     public void fight()

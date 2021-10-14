@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7878702910017052018}
   - component: {fileID: 5723077571302640397}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Point Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +103,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7104665395973050083}
   - component: {fileID: 509701174059820780}
-  m_Layer: 0
+  - component: {fileID: 2795886660053136875}
+  - component: {fileID: 5860132905551806789}
+  m_Layer: 7
   m_Name: PlanetMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -141,6 +143,38 @@ MonoBehaviour:
   upDownAmplitude: 0.2
   rotationSpeed: 100
   child: {fileID: 7104665396756016582}
+--- !u!114 &2795886660053136875
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7104665395973050082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c6a8579aa845f549a9100fd8e789059, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  armyDisplay: {fileID: 0}
+  armyDisplay2: {fileID: 0}
+  coefLossPerTick: 0.1
+  tickRoundBattle: 1
+  timer: {fileID: 0}
+  refreshRate: 1
+  playerResources: {fileID: 0}
+--- !u!114 &5860132905551806789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7104665395973050082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65d8bf1e7c776b24b8638df45b0b205b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  battleManager: {fileID: 2795886660053136875}
 --- !u!1 &7104665396756016585
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,7 +187,8 @@ GameObject:
   - component: {fileID: 7104665396756016581}
   - component: {fileID: 7104665396756016580}
   - component: {fileID: 7104665396756016583}
-  m_Layer: 0
+  - component: {fileID: 4865166362341664889}
+  m_Layer: 7
   m_Name: Marker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,6 +273,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mFilter: {fileID: 7104665396756016581}
   mRenderer: {fileID: 7104665396756016580}
+  mCollider: {fileID: 4865166362341664889}
   pyramidFaces: 6
   pyramidHeigth: 0.5
   pyramidRadius: 0.1
+--- !u!64 &4865166362341664889
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7104665396756016585}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
