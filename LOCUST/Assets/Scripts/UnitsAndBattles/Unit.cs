@@ -124,6 +124,12 @@ public float vInfantryScore { get; private set; }
         }
     }
 
+    public static UnitList getRandomUnit()
+    {
+        System.Array values = System.Enum.GetValues(typeof(UnitList));
+        return (UnitList)values.GetValue((int)(Random.value * values.Length));
+    }
+
 }
 
 

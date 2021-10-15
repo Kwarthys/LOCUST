@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class BattleManager : MonoBehaviour
 {
-    public Army armyA = new Army();
-    public Army armyB = new Army();
+    public Army armyA;
+    public Army armyB;
 
     public ArmyDisplayController armyDisplay;
     public ArmyDisplayController armyDisplay2;
@@ -62,7 +62,12 @@ public class BattleManager : MonoBehaviour
 
     public void setDrawingState(bool state)
     {
-        if (state) timer.go(redrawTimerIndex);
+        if (state)
+        {
+            armyDisplay.displayArmy(armyA, "Player army");
+            armyDisplay2.displayArmy(armyB, "Defending army");
+            timer.go(redrawTimerIndex);
+        }
         else timer.stop(redrawTimerIndex);
     }
 

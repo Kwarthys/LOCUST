@@ -4,17 +4,12 @@ using UnityEngine;
 
 public class Conflict : MonoBehaviour
 {
-    private Army playerArmy;
-    private Army defenderArmy;
-
     public BattleManager battleManager;
 
-    public void generateRandomEnemyArmy()
+    public void generateRandomEnemyArmy(float points)
     {
-        defenderArmy = new Army();
-        defenderArmy.addTroops(UnitList.Samurai, 5000);
-
-        playerArmy = new Army();
+        battleManager.armyA = new Army();
+        battleManager.armyB = Army.createRandomAmryOfPoints(points);
     }
 
     

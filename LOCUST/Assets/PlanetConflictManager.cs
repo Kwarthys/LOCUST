@@ -19,6 +19,8 @@ public class PlanetConflictManager : MonoBehaviour
 
     private List<Conflict> conflicts = new List<Conflict>();
 
+    private Conflict activeConflict = null;
+
     public LayerMask markerLayerMask;
 
     public void Update()
@@ -35,7 +37,7 @@ public class PlanetConflictManager : MonoBehaviour
                 GameObject marker = Instantiate(planetConflictMarkerPrefab, surfacePoints[i], Quaternion.LookRotation(-surfacePoints[i]), planet.transform);
 
                 Conflict c = marker.GetComponent<Conflict>();
-                c.generateRandomEnemyArmy();
+                c.generateRandomEnemyArmy(Random.value * 5000 + 5000);
                 c.transform.name = "Conflict" + i;
 
                 BattleManager bm = c.battleManager;
@@ -51,23 +53,28 @@ public class PlanetConflictManager : MonoBehaviour
 
         if(Input.GetMouseButtonUp(0))
         {
-            if(detectClickedConflict() != null)
+            Conflict clickedConflict = detectClickedConflict();
+            if (clickedConflict != null)
             {
-                //dotings
+                if(activeConflict != clickedConflict)
+                {
+                    if(activeConflict != null)
+                    {
+                        activeConflict.battleManager.setDrawingState(false);
+                    }
+
+                    activeConflict = clickedConflict;
+                    activeConflict.battleManager.setDrawingState(true);
+                }
             }
         }
     }
 
     private Conflict detectClickedConflict()
     {
-        Debug.Log("clic");
-
-        RaycastHit hit;
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, 60, markerLayerMask))
+        if (Physics.Raycast(ray, out RaycastHit hit, 60, markerLayerMask))
         {
-            Debug.Log("hit " + hit.collider.transform.parent.name);
-
             return hit.collider.transform.parent.GetComponent<Conflict>();
         }
 

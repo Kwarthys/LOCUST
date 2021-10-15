@@ -254,4 +254,36 @@ public class Army
 
         return c;
     }
+
+    public static Army createRandomAmryOfPoints(float points)
+    {
+        Army army = new Army();
+
+        float currentScore = 0;
+
+        while(currentScore < points)
+        {
+            UnitList newUnit = Unit.getRandomUnit();
+            Unit u = Unit.getUnit(newUnit);
+
+            float remainingPoints = points - currentScore;
+
+            if(remainingPoints < u.scoreValue)
+            {
+                army.addTroops(newUnit, 1);
+                currentScore += u.scoreValue;
+            }
+            else
+            {
+                float pointsToAddHere = remainingPoints * Random.value;
+                int numberToAdd = Mathf.CeilToInt(pointsToAddHere / u.scoreValue);
+                float scoreActuallyAdded = u.scoreValue * numberToAdd;
+                currentScore += scoreActuallyAdded;
+                army.addTroops(newUnit, numberToAdd);
+            }
+        }
+
+        Debug.Log(army);
+        return army;
+    }
 }
