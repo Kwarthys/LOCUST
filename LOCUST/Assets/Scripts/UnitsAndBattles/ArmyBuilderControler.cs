@@ -10,7 +10,7 @@ public class ArmyBuilderControler : MonoBehaviour
     public TMP_InputField numberInput;
     public TextMeshProUGUI costsPoints;
 
-    public BattleManager battleManager;
+    public PlanetConflictManager conflictManager;
 
     // Start is called before the first frame update
     void Start()
@@ -40,7 +40,7 @@ public class ArmyBuilderControler : MonoBehaviour
     public void recruitTroops()
     {
         //Debug.Log(getInputInt() + " " + Unit.getUnit((UnitList)unitListSelector.value).name);
-        battleManager.recruitForPlayer((UnitList)unitListSelector.value, getInputInt());
+        conflictManager.recruitForPlayer((UnitList)unitListSelector.value, getInputInt());
     }
 
     private int getInputInt()

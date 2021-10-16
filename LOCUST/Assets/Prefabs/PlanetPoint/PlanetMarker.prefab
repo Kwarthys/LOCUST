@@ -175,6 +175,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   battleManager: {fileID: 2795886660053136875}
+  activatedColor: {r: 0.96759886, g: 1, b: 0.2688679, a: 1}
+  deactivatedColor: {r: 1, g: 0.5152212, b: 0, a: 1}
+  marker: {fileID: 7104665396756016583}
+  markerMovement: {fileID: 509701174059820780}
+  lightIntensity: 3
 --- !u!1 &7104665396756016585
 GameObject:
   m_ObjectHideFlags: 0

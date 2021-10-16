@@ -24,9 +24,11 @@ public class BattleManager : MonoBehaviour
 
     private MyFileWriter logger = new MyFileWriter();
 
-    private int battleTickTimerIndex;
-    private int redrawTimerIndex;
+    private int battleTickTimerIndex = -1;
+    private int redrawTimerIndex = -1;
 
+    private bool battlePaused = true;
+    private bool battleFinished = false;
 
     public PlayerResources playerResources;
 
@@ -37,27 +39,11 @@ public class BattleManager : MonoBehaviour
     {
         battleTickTimerIndex = timer.setup(new TimerSettings(tickRoundBattle, new TimerCallBack(this), false));
         redrawTimerIndex = timer.setup(new TimerSettings(refreshRate, new TimerRedrawCallBack(this), true));
-        //timer.go();
-
-        //Test battle
-        /*
-        armyA.addTroops(UnitList.Samurai, 1000);
-        armyA.addTroops(UnitList.Bomber, 50);
-        armyA.addTroops(UnitList.Fighter, 100);
-        armyB.addTroops(UnitList.Tank, 5);
-        armyB.addTroops(UnitList.Marine, 1650);
-        armyB.addTroops(UnitList.Fighter, 100);
-
-        armyDisplay.displayArmy(armyA, "ArmyA");
-        armyDisplay2.displayArmy(armyB, "ArmyB");
-        */
-        //Debug.Log(armyB.getTotalArmyCost());
     }
 
     public void startBattle()
     {
         timer.go(battleTickTimerIndex);
-        //timer.go(redrawTimerIndex);
     }
 
     public void setDrawingState(bool state)
@@ -68,7 +54,10 @@ public class BattleManager : MonoBehaviour
             armyDisplay2.displayArmy(armyB, "Defending army");
             timer.go(redrawTimerIndex);
         }
-        else timer.stop(redrawTimerIndex);
+        else if (redrawTimerIndex != -1)
+        {
+            timer.stop(redrawTimerIndex);
+        }
     }
 
     public void fight()
@@ -76,10 +65,9 @@ public class BattleManager : MonoBehaviour
         scoresA.Add(armyA.computeScore().armySize);
         scoresB.Add(armyB.computeScore().armySize);
 
-        if (armyA.isEmpty() || armyB.isEmpty())
+        if (armyA.isEmpty() && !battlePaused)
         {
-            logger.writeLog("ArmyA", scoresA, false);
-            logger.writeLog("ArmyB", scoresB);
+            battlePaused = true;
 
             timer.stop(battleTickTimerIndex);
             timer.stop(redrawTimerIndex);
@@ -87,25 +75,25 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        /*
-        Debug.Log("A: " + armyA);
-        Debug.Log("VERSUS");
-        Debug.Log("B: " + armyB);
-        */
-        combat(armyA, armyB);
-        //combat(armyB, armyA);
-        
-        //Debug.Log("Gives");
-        //Debug.Log("A: " + armyA);
-        //Debug.Log("B: " + armyB);
-
-        /*
-        c++;
-        if (c == 25)
+        if (armyB.isEmpty() && !battleFinished)
         {
-            armyA.addTroops(UnitList.Samurai, 1200);
+            battleFinished = true;
+
+            timer.stop(battleTickTimerIndex);
+            timer.stop(redrawTimerIndex);
+
+            logger.writeLog("ArmyA", scoresA, false);
+            logger.writeLog("ArmyB", scoresB);
         }
-        */
+
+        Debug.Log("Fight : bP " + battlePaused + ". bF " + battleFinished);
+
+        if(battlePaused || battleFinished)
+        {
+            return;
+        }
+
+        combat(armyA, armyB);
     }
 
 
@@ -202,6 +190,25 @@ public class BattleManager : MonoBehaviour
         armyDisplay2.displayArmy();
     }
 
+    public void recruitForPlayer(UnitList unit, int number)
+    {
+        if (battleFinished) return;
+
+        if (playerResources.tryBuy(Unit.getCost(unit, number)))
+        {
+            armyA.addTroops(unit, number);
+
+            if (battlePaused)
+            {
+                //restartBattle
+                timer.go(battleTickTimerIndex);
+                timer.go(redrawTimerIndex);
+
+                battlePaused = false;
+            }
+        }
+    }
+
     public class TimerCallBack : IMyCallBack
     {
         private BattleManager toCall;
@@ -230,15 +237,5 @@ public class BattleManager : MonoBehaviour
         {
             toCall.redrawArmies();
         }
-    }
-
-    public void recruitForPlayer(UnitList unit, int number)
-    {
-        if(playerResources.tryBuy(Unit.getCost(unit, number)))
-        {
-            armyA.addTroops(unit, number);
-            armyDisplay.displayArmy();
-        }
-
     }
 }

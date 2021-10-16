@@ -10,10 +10,24 @@ public class PlanetMarkerMovementControler : MonoBehaviour
 
     public Transform child;
 
-    void Update()
+    private bool animated = false;
+
+    private void Update()
     {
         transform.Rotate(new Vector3(0, 0, rotationSpeed * Time.deltaTime));
 
-        child.localPosition = new Vector3(0, 0, upDownAmplitude * (Mathf.Sin(upDownSpeed * Time.realtimeSinceStartup)+1)/-2);
+        if(animated)
+            child.localPosition = new Vector3(0, 0, upDownAmplitude * (Mathf.Sin(upDownSpeed * Time.realtimeSinceStartup) + 1) / -2);
     }
+
+    public void setState(bool activated)
+    {
+        if(!activated)
+        {
+            child.localPosition = Vector3.zero;
+        }
+
+        animated = activated;
+    }
+
 }

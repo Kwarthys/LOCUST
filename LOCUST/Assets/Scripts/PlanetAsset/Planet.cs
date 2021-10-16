@@ -41,13 +41,18 @@ public class Planet : MonoBehaviour
     public Texture2D tex;
 
     public bool generate = false;
+    public bool generateAndChangeSeed = false;
 
     public List<Vector3> surfacePoints = new List<Vector3>();
 
     public bool generated = false;
 
+    private int seed = 0;
+
     private void Start()
     {
+        seed = System.DateTime.Now.Millisecond;
+
         generatePlanet();
 
         surfacePoints.Clear();
@@ -60,15 +65,16 @@ public class Planet : MonoBehaviour
                 //Instantiate(planetMarkerPrefab, p, Quaternion.LookRotation(-p), transform);
             }
         }
-        Debug.Log("Generated : SP " + surfacePoints.Count);
         generated = true;
     }
 
     private void Update()
     {
-        if(generate)
+        if(generate || generateAndChangeSeed)
         {
-            generated = false;
+            if (generateAndChangeSeed) seed = System.DateTime.Now.Millisecond;
+
+             generated = false;
 
             generatePlanet();
             generate = false;
@@ -93,7 +99,7 @@ public class Planet : MonoBehaviour
 
     void init()
     {        
-        generator = new TerrainGenerator(settings, System.DateTime.Now.Millisecond);//radius, layers, speed, strength, amplitudePersistence, speedIncrease, min, offset);
+        generator = new TerrainGenerator(settings, seed);//radius, layers, speed, strength, amplitudePersistence, speedIncrease, min, offset);
 
         if(tex==null)
         {

@@ -23,6 +23,13 @@ public class PlanetConflictManager : MonoBehaviour
 
     public LayerMask markerLayerMask;
 
+    public PlayerResources playerResources;
+
+    public void Start()
+    {
+        
+    }
+
     public void Update()
     {
         //We wait the end of planet generation
@@ -30,7 +37,7 @@ public class PlanetConflictManager : MonoBehaviour
         {
             List<Vector3> surfacePoints = planet.surfacePoints;
 
-            int nbPoint = (int)(Random.value * (surfacePoints.Count - 1)) + 1;
+            int nbPoint = (int)(Random.value * (surfacePoints.Count - 2)) + 2;
             Debug.Log("Genrated " + nbPoint + " conflicts");
             for (int i = 0; i < nbPoint; ++i)
             {
@@ -44,7 +51,9 @@ public class PlanetConflictManager : MonoBehaviour
                 bm.timer = timer;
                 bm.armyDisplay = armyDisplay;
                 bm.armyDisplay2 = armyDisplay2;
+                bm.playerResources = playerResources;
 
+                c.setState(false);
                 conflicts.Add(c);
             }
 
@@ -60,11 +69,11 @@ public class PlanetConflictManager : MonoBehaviour
                 {
                     if(activeConflict != null)
                     {
-                        activeConflict.battleManager.setDrawingState(false);
+                        activeConflict.setState(false);
                     }
 
                     activeConflict = clickedConflict;
-                    activeConflict.battleManager.setDrawingState(true);
+                    activeConflict.setState(true);
                 }
             }
         }
@@ -79,5 +88,14 @@ public class PlanetConflictManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void recruitForPlayer(UnitList unit, int number)
+    {
+        if(activeConflict != null)
+        {
+            activeConflict.battleManager.recruitForPlayer(unit, number);
+        }
+
     }
 }
