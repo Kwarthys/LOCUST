@@ -283,7 +283,6 @@ public class Army
             }
         }
 
-        Debug.Log(army);
         return army;
     }
 }

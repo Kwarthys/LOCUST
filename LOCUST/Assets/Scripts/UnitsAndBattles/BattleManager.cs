@@ -190,9 +190,9 @@ public class BattleManager : MonoBehaviour
         armyDisplay2.displayArmy();
     }
 
-    public void recruitForPlayer(UnitList unit, int number)
+    public bool recruitForPlayer(UnitList unit, int number)
     {
-        if (battleFinished) return;
+        if (battleFinished) return false;
 
         if (playerResources.tryBuy(Unit.getCost(unit, number)))
         {
@@ -206,7 +206,11 @@ public class BattleManager : MonoBehaviour
 
                 battlePaused = false;
             }
+
+            return true;
         }
+
+        return false;
     }
 
     public class TimerCallBack : IMyCallBack

@@ -14,6 +14,7 @@ public class PlanetConflictManager : MonoBehaviour
     public ArmyDisplayController armyDisplay2;
 
     public GameObject planetConflictMarkerPrefab;
+    public GameObject dropPodPrefab;
 
     private bool initialized = false;
 
@@ -25,11 +26,6 @@ public class PlanetConflictManager : MonoBehaviour
 
     public PlayerResources playerResources;
 
-    public void Start()
-    {
-        
-    }
-
     public void Update()
     {
         //We wait the end of planet generation
@@ -38,7 +34,6 @@ public class PlanetConflictManager : MonoBehaviour
             List<Vector3> surfacePoints = planet.surfacePoints;
 
             int nbPoint = (int)(Random.value * (surfacePoints.Count - 2)) + 2;
-            Debug.Log("Genrated " + nbPoint + " conflicts");
             for (int i = 0; i < nbPoint; ++i)
             {
                 GameObject marker = Instantiate(planetConflictMarkerPrefab, surfacePoints[i], Quaternion.LookRotation(-surfacePoints[i]), planet.transform);
@@ -94,7 +89,12 @@ public class PlanetConflictManager : MonoBehaviour
     {
         if(activeConflict != null)
         {
-            activeConflict.battleManager.recruitForPlayer(unit, number);
+            if(activeConflict.battleManager.recruitForPlayer(unit, number))
+            {
+                //if recruit successful
+                DropPodControler dpC = Instantiate(dropPodPrefab, cam.transform.position, Quaternion.identity, planet.transform).GetComponent<DropPodControler>();
+                dpC.setupPod(activeConflict.transform.localPosition);
+            }
         }
 
     }
