@@ -1,3 +1,4 @@
+//using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -284,5 +285,18 @@ public class Army
         }
 
         return army;
+    }
+
+    public static float getRelativeScore(Army armyA, Army armyB)
+    {
+        if (armyB.isEmpty()) return 1;
+        if (armyA.isEmpty()) return 0;
+
+        ArmyScore a = armyA.computeScore();
+        ArmyScore b = armyB.computeScore();
+
+        float total = a.armySize + b.armySize;
+
+        return a.armySize / total;
     }
 }

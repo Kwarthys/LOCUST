@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlanetConflictManager : MonoBehaviour
 {
@@ -29,6 +30,8 @@ public class PlanetConflictManager : MonoBehaviour
     private Army playerReserveArmy = new Army();
     public ArmyDisplayController reserveArmyDisplay;
 
+    public Slider scoreRelativeDisplaySlider;
+
     private void Start()
     {
         reserveArmyDisplay.displayArmy(playerReserveArmy, "Reserves");
@@ -56,6 +59,7 @@ public class PlanetConflictManager : MonoBehaviour
                 bm.armyDisplayDefense = armyDisplayDefense;
                 bm.playerResources = playerResources;
                 bm.conflict = c;
+                bm.scoreRelativeDisplaySlider = scoreRelativeDisplaySlider;
 
                 c.setState(false);
                 conflicts.Add(c);

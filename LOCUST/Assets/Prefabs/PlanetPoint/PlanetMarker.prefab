@@ -164,6 +164,7 @@ MonoBehaviour:
   refreshRate: 1
   battleFinished: 0
   playerResources: {fileID: 0}
+  scoreRelativeDisplaySlider: {fileID: 0}
 --- !u!114 &5860132905551806789
 MonoBehaviour:
   m_ObjectHideFlags: 0

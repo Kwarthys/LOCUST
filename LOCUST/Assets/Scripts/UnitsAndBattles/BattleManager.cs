@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BattleManager : MonoBehaviour
 {
@@ -35,6 +36,8 @@ public class BattleManager : MonoBehaviour
 
     public PlayerResources playerResources;
 
+    public Slider scoreRelativeDisplaySlider;
+
     //debug
     //private int c = 0;
 
@@ -55,7 +58,11 @@ public class BattleManager : MonoBehaviour
         {
             armyDisplayPlayer.displayArmy(armyA, "Player army");
             armyDisplayDefense.displayArmy(armyB, "Defending army");
-            timer.go(redrawTimerIndex);
+
+            scoreRelativeDisplaySlider.value = Army.getRelativeScore(armyA, armyB);
+
+            if (!battleFinished && !battlePaused)
+                timer.go(redrawTimerIndex);
         }
         else if (redrawTimerIndex != -1)
         {
@@ -191,6 +198,8 @@ public class BattleManager : MonoBehaviour
     {
         armyDisplayPlayer.displayArmy();
         armyDisplayDefense.displayArmy();
+
+        scoreRelativeDisplaySlider.value = Army.getRelativeScore(armyA, armyB);
     }
 
     public void addToPlayerArmy(Army army)
