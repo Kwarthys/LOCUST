@@ -14,7 +14,7 @@ public class PlayerResources : MonoBehaviour
         resources[GameResources.BioMass] = 0;
         resources[GameResources.Metals] = 0;
 
-        addResource(50000, 30000);
+        addResource(500000, 300000);
     }
 
     public void addResource(GameResources r, int amount)

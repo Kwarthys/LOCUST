@@ -51,7 +51,7 @@ public abstract class Unit
     public UnitType type { get; private set; }
     public UnitList unitName { get; private set; }
 
-public float vInfantryScore { get; private set; }
+    public float vInfantryScore { get; private set; }
     public float vHeavyScore { get; private set; }
     public float vFlyingScore { get; private set; }
 

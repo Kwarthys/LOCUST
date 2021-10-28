@@ -10,8 +10,8 @@ public class PlanetConflictManager : MonoBehaviour
 
     public TimedCallBack timer;
 
-    public ArmyDisplayController armyDisplay;
-    public ArmyDisplayController armyDisplay2;
+    public ArmyDisplayController armyDisplayPlayer;
+    public ArmyDisplayController armyDisplayDefense;
 
     public GameObject planetConflictMarkerPrefab;
     public GameObject dropPodPrefab;
@@ -25,6 +25,14 @@ public class PlanetConflictManager : MonoBehaviour
     public LayerMask markerLayerMask;
 
     public PlayerResources playerResources;
+
+    private Army playerReserveArmy = new Army();
+    public ArmyDisplayController reserveArmyDisplay;
+
+    private void Start()
+    {
+        reserveArmyDisplay.displayArmy(playerReserveArmy, "Reserves");
+    }
 
     public void Update()
     {
@@ -44,9 +52,10 @@ public class PlanetConflictManager : MonoBehaviour
 
                 BattleManager bm = c.battleManager;
                 bm.timer = timer;
-                bm.armyDisplay = armyDisplay;
-                bm.armyDisplay2 = armyDisplay2;
+                bm.armyDisplayPlayer = armyDisplayPlayer;
+                bm.armyDisplayDefense = armyDisplayDefense;
                 bm.playerResources = playerResources;
+                bm.conflict = c;
 
                 c.setState(false);
                 conflicts.Add(c);
@@ -72,6 +81,45 @@ public class PlanetConflictManager : MonoBehaviour
                 }
             }
         }
+
+        //checking planet won
+        int won = 0;
+        bool victory = true;
+        foreach(Conflict c in conflicts)
+        {
+            if(c.isWon)
+            {
+                won++;
+            }
+
+            victory = victory && c.isWon;
+        }
+
+        if (Random.value > 0.99)
+        {
+            //Debug.Log("Won " + won + "/" + conflicts.Count);
+            if(victory)
+            {
+                Debug.Log("Victory!");
+            }
+        }
+    }
+
+    public void onSendTroopsClick()
+    {
+        if (activeConflict != null && !playerReserveArmy.isEmpty())
+        {
+            if(!activeConflict.battleManager.isBattleFinished())
+            {
+                DropPodControler dpC = Instantiate(dropPodPrefab, cam.transform.position, Quaternion.identity, planet.transform).GetComponent<DropPodControler>();
+                dpC.setupPod(activeConflict.transform.localPosition);
+
+                activeConflict.battleManager.addToPlayerArmy(playerReserveArmy);
+                playerReserveArmy = new Army();
+                reserveArmyDisplay.displayArmy(playerReserveArmy, "Reserves");
+            }
+                
+        }
     }
 
     private Conflict detectClickedConflict()
@@ -87,15 +135,10 @@ public class PlanetConflictManager : MonoBehaviour
 
     public void recruitForPlayer(UnitList unit, int number)
     {
-        if(activeConflict != null)
+        if(playerResources.tryBuy(Unit.getCost(unit, number)))
         {
-            if(activeConflict.battleManager.recruitForPlayer(unit, number))
-            {
-                //if recruit successful
-                DropPodControler dpC = Instantiate(dropPodPrefab, cam.transform.position, Quaternion.identity, planet.transform).GetComponent<DropPodControler>();
-                dpC.setupPod(activeConflict.transform.localPosition);
-            }
+            playerReserveArmy.addTroops(unit, number);
+            reserveArmyDisplay.displayArmy();
         }
-
     }
 }

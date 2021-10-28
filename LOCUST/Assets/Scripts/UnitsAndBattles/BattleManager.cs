@@ -7,8 +7,10 @@ public class BattleManager : MonoBehaviour
     public Army armyA;
     public Army armyB;
 
-    public ArmyDisplayController armyDisplay;
-    public ArmyDisplayController armyDisplay2;
+    public Conflict conflict;
+
+    public ArmyDisplayController armyDisplayPlayer;
+    public ArmyDisplayController armyDisplayDefense;
 
     public float coefLossPerTick = 0.01f;
     private float minSizeThreshold = 2000;
@@ -28,7 +30,8 @@ public class BattleManager : MonoBehaviour
     private int redrawTimerIndex = -1;
 
     private bool battlePaused = true;
-    private bool battleFinished = false;
+    public bool battleFinished = false;
+    public bool isBattleFinished() { return battleFinished; }
 
     public PlayerResources playerResources;
 
@@ -50,8 +53,8 @@ public class BattleManager : MonoBehaviour
     {
         if (state)
         {
-            armyDisplay.displayArmy(armyA, "Player army");
-            armyDisplay2.displayArmy(armyB, "Defending army");
+            armyDisplayPlayer.displayArmy(armyA, "Player army");
+            armyDisplayDefense.displayArmy(armyB, "Defending army");
             timer.go(redrawTimerIndex);
         }
         else if (redrawTimerIndex != -1)
@@ -86,7 +89,7 @@ public class BattleManager : MonoBehaviour
             logger.writeLog("ArmyB", scoresB);
         }
 
-        Debug.Log("Fight : bP " + battlePaused + ". bF " + battleFinished);
+        //Debug.Log("Fight : bP " + battlePaused + ". bF " + battleFinished);
 
         if(battlePaused || battleFinished)
         {
@@ -186,8 +189,39 @@ public class BattleManager : MonoBehaviour
 
     public void redrawArmies()
     {
-        armyDisplay.displayArmy();
-        armyDisplay2.displayArmy();
+        armyDisplayPlayer.displayArmy();
+        armyDisplayDefense.displayArmy();
+    }
+
+    public void addToPlayerArmy(Army army)
+    {
+        if (battleFinished) return;
+
+        foreach (UnitList unit in army.troops.Keys)
+        {
+            armyA.addTroops(unit, army.troops[unit]);
+        }
+
+        if (battlePaused)
+        {
+            //restartBattle
+            timer.go(battleTickTimerIndex);
+            timer.go(redrawTimerIndex);
+
+            battlePaused = false;
+        }
+    }
+
+    public bool recruitForPlayer(Army army)
+    {
+        if (battleFinished) return false;
+
+        if (playerResources.tryBuy(army.getTotalArmyCost()))
+        {
+            addToPlayerArmy(army);
+            return true;
+        }
+        return false;
     }
 
     public bool recruitForPlayer(UnitList unit, int number)
@@ -225,6 +259,11 @@ public class BattleManager : MonoBehaviour
         public void call()
         {
             toCall.fight();
+            if(toCall.battleFinished)
+            {
+                Debug.Log("BattleFinished");
+                toCall.conflict.setWon();
+            }
         }
     }
 
